@@ -10,13 +10,6 @@ class OrderPage:
     def __init__(self, driver):
         self.driver = driver
 
-    @allure.step('Открыть страницу https://qa-scooter.praktikum-services.ru/order')
-    def order_page(self):
-        self.driver.get('https://qa-scooter.praktikum-services.ru/order')
-
-    def wait_for_order_page(self):
-        WebDriverWait(self.driver, 10).until(ec.url_to_be('https://qa-scooter.praktikum-services.ru/order'))
-
     def set_name(self, name):
         self.driver.find_element(*OrderPageLocators.NAME_FIELD).send_keys(name)
 
@@ -41,11 +34,11 @@ class OrderPage:
         self.driver.find_element(*OrderPageLocators.NEXT_BUTTON).click()
 
     @allure.step('Заполнить поля раздела "Для кого самокат?"')
-    def filling_form(self, name, lastname, address, station, number):
-        self.set_name(name)
-        self.set_last_name(lastname)
-        self.set_address(address)
-        self.set_station(station)
+    def filling_form(self, person, number):
+        self.set_name(person.get("name"))
+        self.set_last_name(person.get("lastname"))
+        self.set_address(person.get("address"))
+        self.set_station(person.get("station"))
         self.set_phone_number(number)
         self.click_next_button()
 
@@ -75,13 +68,13 @@ class OrderPage:
         self.driver.find_element(*OrderPageLocators.ORDER_BUTTON).click()
 
     @allure.step('Заполнить раздел "Про аренду"')
-    def input_rental_information(self, date, day, color, comment):
+    def input_rental_information(self, date, rental_data):
         color_checkbox = {"black": OrderPageLocators.BLACK_CHECKBOX, "grey": OrderPageLocators.GREY_CHECKBOX}
         day_period = {"one": OrderPageLocators.ONE_DAY, "two": OrderPageLocators.TWO_DAY}
         self.set_date(date)
-        self.select_rental_period(day_period.get(day))
-        self.click_checkbox(color_checkbox.get(color))
-        self.set_comment(comment)
+        self.select_rental_period(day_period.get(rental_data.get('day')))
+        self.click_checkbox(color_checkbox.get(rental_data.get('color')))
+        self.set_comment(rental_data.get('comment'))
         self.click_order_button()
 
     def wait_for_confirm(self):
@@ -92,9 +85,9 @@ class OrderPage:
         self.driver.find_element(*OrderPageLocators.YES_BUTTON).click()
 
     def wait_for_order_completed(self):
-        WebDriverWait(self.driver, 3).until(ec.visibility_of_element_located(OrderPageLocators.ORDER_COMPLETED))
+        WebDriverWait(self.driver, 10).until(ec.visibility_of_element_located(OrderPageLocators.ORDER_COMPLETED))
 
-    @allure.step('Получить текст диалога "Заказ оформлен"')
+    @allure.step('Получить текст диалога успешного заказа')
     def get_new_order_title(self):
         new_order_text = self.driver.find_element(*OrderPageLocators.ORDER_COMPLETED).text
         return new_order_text

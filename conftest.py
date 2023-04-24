@@ -19,5 +19,10 @@ def get_phone_number():
 
 
 @pytest.fixture
-def get_date():
+def get_date_today():
     return datetime.date.today().strftime('%d.%m.%Y')
+
+
+@pytest.fixture
+def get_date_tomorrow():
+    return (datetime.date.today() + datetime.timedelta(days=1)).strftime('%d.%m.%Y')
