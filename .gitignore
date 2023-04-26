@@ -1,0 +1,8 @@
+.idea
+__pycache__/
+locators/__pycache__/
+pages/__pycache__/
+tests/__pycache__/
+geckodriver
+geckodriver.log
+tests/geckodriver.log
